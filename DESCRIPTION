@@ -1,0 +1,14 @@
+Package: panas
+Type: Package
+Title: Reduce the phriction when working with maps & time-series
+Version: 0.1.0
+Author: Matteo De Felice
+Maintainer: Matteo De Felice <matteo.defelice@enea.it>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+Depends: sp,
+  rgdal
+RoxygenNote: 6.0.1
