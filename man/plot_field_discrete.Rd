@@ -5,11 +5,11 @@
 \title{Plot a gridded field using discrete scale}
 \usage{
 plot_field_discrete(x, lon, lat, lonlim = "auto", latlim = "auto",
-  labels = c(), breaks = c(), cscale = "Spectral", rev_cscale = F,
-  show_lat_lon_labels = T, varname = "x", title = c(), mask = NULL,
-  siglev = NULL, plot_only_sig = F, smooth = F, smooth_factor = 5,
-  smooth_theta = 0.5, lineWidth = 0.5, dotSize = 0.5, GRID_STEP = 10,
-  FONT_SIZE = 18, show_legend = T)
+  breaks = c(), labels = c(), color_scale = "Spectral",
+  rev_color_scale = F, show_lat_lon_labels = T, varname = "x",
+  mask = NULL, siglev = NULL, plot_only_sig = F, smooth = F,
+  smooth_factor = 5, smooth_theta = 0.5, line_width = 0.5,
+  dot_size = 0.5, grid_step = 10, font_size = 18, show_legend = TRUE)
 }
 \arguments{
 \item{x}{The field to be plotted, it can be both a matrix or a data frame. See Details for more information.}
@@ -20,7 +20,44 @@ plot_field_discrete(x, lon, lat, lonlim = "auto", latlim = "auto",
 
 \item{lonlim}{A vector of two values defining the longitude limits for the plot. The default is 'auto': it tries to detect the extreme directly from the provided longitude values.}
 
-\item{òatlim}{A vector of two values defining the latitude limits for the plot. The default is 'auto': it tries to detect the extreme directly from the provided latitude values.}
+\item{latlim}{A vector of two values defining the latitude limits for the plot. The default is 'auto': it tries to detect the extreme directly from the provided latitude values.}
+
+\item{breaks}{The vector to be used  to define the color scale. If the vector contains N values (n_1, n_2, ..., n_k), the scale will have N+1 intervals: "<n_1", "n_1, n_2", ..., ">n_k"}
+
+\item{labels}{A character vector containing all the labels associated to the \code{breaks}, the labels' lenght should have N+1 length with N the breaks' length}
+
+\item{color_scale}{This parameter defines the color palette. It might be a string defining the name of a colorbrewer (see colorbrewer2.org) palette or a list of all the colors associated to each interval.}
+
+\item{rev_color_scale}{logical value to define if the \code{color_scale} should be used reversed}
+
+\item{show_lat_lon_labels}{logical value that defines if labels for longitude and latitude should be shown}
+
+\item{varname}{Name of the plotted variable that appears on the legend bar}
+
+\item{mask}{Field of the same size of \code{x} that will be used to mask the values according to the parameter \code{siglev} (usually used to indicate statistical significance)}
+
+\item{siglev}{Scalar value that is used with \code{mask} to "mask" the values. All the points where \code{mask} <= \code{siglev} will be considered "significant" and then marked with dots (if \code{plot_only_sig} is \code{FALSE})}
+
+\item{plot_only_sig}{If \code{TRUE} only the significant points will be plotted, otherwise the significance will be indicated with dots}
+
+\item{smooth}{Logical value that defines if a smoothing will be applied to the field}
+
+\item{smooth_factor}{The amplitude of the smoothing, the value indicates the "multiplication factor", i.e. how many points are used for each original grid points}
+
+\item{line_width}{Line width used for the plot}
+
+\item{dot_size}{Size of the dots used to indicate the significance}
+
+\item{grid_step}{Interval used for the lan-lot grid}
+
+\item{font_size}{Size of the fonts used in the plot}
+
+\item{show_legend}{}
+
+\item{theta}{This is the \code{theta} parameter of the function \code{image.smooth} from the \code{fields} package used for smoothing}
+}
+\value{
+A ggplot object
 }
 \description{
 This function tries to produce high-quality maps of gridded fields using a discrete color-scale. The function is based on \code{ggplot2}.

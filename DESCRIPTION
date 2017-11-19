@@ -11,5 +11,8 @@ Encoding: UTF-8
 LazyData: true
 Depends: sp,
   rgdal,
-  fields
+  fields,
+  reshape2, 
+  ggplot2, 
+  RColorBrewer
 RoxygenNote: 6.0.1
