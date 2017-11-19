@@ -1,12 +1,13 @@
 #' Plot a gridded field using discrete scale
 #'
 #' This function tries to produce high-quality maps of gridded fields using a discrete color-scale. The function is based on \code{ggplot2}.
-#' @param x The field to be plotted, it can be both a matrix or a data frame. See Details for more information.
-#' @param lon Vector of longitude values
+#' World borders will be used with the plot. 
+#' @param x The field to be plotted, it can be both a matrix or a vector. See Details for more information.
+#' @param lon Vector of longitude values. Longitude should be in the range c(-180, 180), otherwise it will be transformed
 #' @param lat Vector of latitude values
 #' @param lonlim A vector of two values defining the longitude limits for the plot. The default is 'auto': it tries to detect the extreme directly from the provided longitude values.
 #' @param latlim A vector of two values defining the latitude limits for the plot. The default is 'auto': it tries to detect the extreme directly from the provided latitude values.
-#' @param breaks The vector to be used  to define the color scale. If the vector contains N values (n_1, n_2, ..., n_k), the scale will have N+1 intervals: "<n_1", "n_1, n_2", ..., ">n_k"
+#' @param breaks The vector to be used  to define the color scale. If the vector contains N values (n_1, n_2, ..., n_k), the scale will have N+1 intervals: "<n_1", "n_1, n_2", ..., ">n_k". If breaks are not defined they are automatically computed diving the range of the plotted field in 5 intervals.
 #' @param labels A character vector containing all the labels associated to the \code{breaks}, the labels' lenght should have N+1 length with N the breaks' length 
 #' @param color_scale This parameter defines the color palette. It might be a string defining the name of a colorbrewer (see colorbrewer2.org) palette or a list of all the colors associated to each interval. 
 #' @param rev_color_scale logical value to define if the \code{color_scale} should be used reversed
@@ -20,12 +21,14 @@
 #' @param theta This is the \code{theta} parameter of the function \code{image.smooth} from the \code{fields} package used for smoothing
 #' @param line_width Line width used for the plot
 #' @param dot_size Size of the dots used to indicate the significance
-#' @param grid_step Interval used for the lan-lot grid
+#' @param grid_step Interval used for the lat-lon grid
 #' @param font_size Size of the fonts used in the plot
-#' @param show_legend 
+#' @param show_legend Logical value to define if the colorbar should be visible
 #' @return A ggplot object
 #' @details Details
-#' About x.
+#' The field \code{x} should be or a matrix/array with 2 dimensions (consistent with \code{lat} and \code{lon}) or a vector. In the latter, it should have the same length of \code{lat} and \code{lon} to have a list of grid points.
+#' The returned \code{ggplot} object can be then combined with other ggplot layers, including \code{coord*} layers. We do not suggest to use projections because they are not well implemented with raster/tiles like in this case, especially when the latitude range is very close to the poles. 
+#' To have a good representation of the field we suggest to add the layer \code{coord_equal()} or \code{coord_quickmap()}
 #' @export
 plot_field_discrete <- function(x, lon, lat, lonlim = 'auto', latlim = 'auto', breaks = c(), labels = c(),
                                color_scale = "Spectral", rev_color_scale = F,
@@ -35,6 +38,12 @@ plot_field_discrete <- function(x, lon, lat, lonlim = 'auto', latlim = 'auto', b
   
   ## X must be lon [rows] x lat [columns]
   ## Check if labels and breaks are consistent
+  if (length(labels) > 0 && length(breaks)> 0) {
+    if (length(labels) != (length(breaks)+1)) {
+      warning('Length of breaks and labels is not consistent, they then will not be used')
+      labels = breaks = c()
+    }
+  }
   ## Checking longitude range
   if (any(lon > 180)) {
     # convert lon from 0-360 to -180,180
@@ -52,7 +61,7 @@ plot_field_discrete <- function(x, lon, lat, lonlim = 'auto', latlim = 'auto', b
   if (is.character(latlim)) {
     latlim = range(lat)
   }
-  ## Load world border shapefile: high-res for 'small' fileds
+  ## Load world border shapefile: high-res for 'small' files
   if ((diff(lonlim) * diff(latlim)) < 3200) {
     load(system.file("borders", "TM_WORLD_BORDERS-0.3.shp.Rdata", package = "eneaR"))
   } else {
@@ -112,7 +121,7 @@ plot_field_discrete <- function(x, lon, lat, lonlim = 'auto', latlim = 'auto', b
   
   # Adding default labels
   if (length(labels) == 0) {
-    labels = pretty_labels(breaks)
+    labels = panas:::pretty_labels(breaks)
   }
   
   dd$x = cut(dd$x, breaks = c(-Inf, breaks, Inf), labels = labels)

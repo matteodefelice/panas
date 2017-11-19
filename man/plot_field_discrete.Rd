@@ -12,9 +12,9 @@ plot_field_discrete(x, lon, lat, lonlim = "auto", latlim = "auto",
   dot_size = 0.5, grid_step = 10, font_size = 18, show_legend = TRUE)
 }
 \arguments{
-\item{x}{The field to be plotted, it can be both a matrix or a data frame. See Details for more information.}
+\item{x}{The field to be plotted, it can be both a matrix or a vector. See Details for more information.}
 
-\item{lon}{Vector of longitude values}
+\item{lon}{Vector of longitude values. Longitude should be in the range c(-180, 180), otherwise it will be transformed}
 
 \item{lat}{Vector of latitude values}
 
@@ -22,7 +22,7 @@ plot_field_discrete(x, lon, lat, lonlim = "auto", latlim = "auto",
 
 \item{latlim}{A vector of two values defining the latitude limits for the plot. The default is 'auto': it tries to detect the extreme directly from the provided latitude values.}
 
-\item{breaks}{The vector to be used  to define the color scale. If the vector contains N values (n_1, n_2, ..., n_k), the scale will have N+1 intervals: "<n_1", "n_1, n_2", ..., ">n_k"}
+\item{breaks}{The vector to be used  to define the color scale. If the vector contains N values (n_1, n_2, ..., n_k), the scale will have N+1 intervals: "<n_1", "n_1, n_2", ..., ">n_k". If breaks are not defined they are automatically computed diving the range of the plotted field in 5 intervals.}
 
 \item{labels}{A character vector containing all the labels associated to the \code{breaks}, the labels' lenght should have N+1 length with N the breaks' length}
 
@@ -48,11 +48,11 @@ plot_field_discrete(x, lon, lat, lonlim = "auto", latlim = "auto",
 
 \item{dot_size}{Size of the dots used to indicate the significance}
 
-\item{grid_step}{Interval used for the lan-lot grid}
+\item{grid_step}{Interval used for the lat-lon grid}
 
 \item{font_size}{Size of the fonts used in the plot}
 
-\item{show_legend}{}
+\item{show_legend}{Logical value to define if the colorbar should be visible}
 
 \item{theta}{This is the \code{theta} parameter of the function \code{image.smooth} from the \code{fields} package used for smoothing}
 }
@@ -61,8 +61,11 @@ A ggplot object
 }
 \description{
 This function tries to produce high-quality maps of gridded fields using a discrete color-scale. The function is based on \code{ggplot2}.
+World borders will be used with the plot.
 }
 \details{
 Details
-About x.
+The field \code{x} should be or a matrix/array with 2 dimensions (consistent with \code{lat} and \code{lon}) or a vector. In the latter, it should have the same length of \code{lat} and \code{lon} to have a list of grid points.
+The returned \code{ggplot} object can be then combined with other ggplot layers, including \code{coord*} layers. We do not suggest to use projections because they are not well implemented with raster/tiles like in this case, especially when the latitude range is very close to the poles. 
+To have a good representation of the field we suggest to add the layer \code{coord_equal()} or \code{coord_quickmap()}
 }
