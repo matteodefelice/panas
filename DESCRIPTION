@@ -14,5 +14,6 @@ Depends: sp,
   fields,
   reshape2, 
   ggplot2, 
-  RColorBrewer
+  RColorBrewer, 
+  dplyr
 RoxygenNote: 6.0.1
