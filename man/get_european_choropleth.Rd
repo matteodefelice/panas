@@ -7,8 +7,8 @@
 get_european_choropleth(input_data)
 }
 \arguments{
-\item{input_data}{A data frame containing the data to be mapped. It should contain two columns: the first containing the ISO ALPHA-2
-code of the country, the second the value that should be mapped.}
+\item{input_data}{A data frame containing the data to be mapped. It should contain two columns: the first containing the NUTS code of the region,
+the second the value that should be mapped.}
 }
 \value{
 A ggplot2 object

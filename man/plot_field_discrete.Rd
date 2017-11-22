@@ -68,4 +68,5 @@ Details
 The field \code{x} should be or a matrix/array with 2 dimensions (consistent with \code{lat} and \code{lon}) or a vector. In the latter, it should have the same length of \code{lat} and \code{lon} to have a list of grid points.
 The returned \code{ggplot} object can be then combined with other ggplot layers, including \code{coord*} layers. We do not suggest to use projections because they are not well implemented with raster/tiles like in this case, especially when the latitude range is very close to the poles. 
 To have a good representation of the field we suggest to add the layer \code{coord_equal()} or \code{coord_quickmap()}
+Comments about smoothing, description of the procedure.
 }
