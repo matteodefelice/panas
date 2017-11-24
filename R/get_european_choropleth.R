@@ -27,16 +27,15 @@ get_european_choropleth <- function(input_data) {
   input_data = mutate(input_data, area = if_else(area == 'GR', 'EL', area)) %>%
     mutate(area = if_else(area == 'GB', 'UK', area))
   
-  jj = left_join(eumap_0_2, input_data, by = c('id' = 'area'))
+  jj = left_join(eumap_0_2, input_data, by = c('id' = 'area')) %>%
+    mutate(level = stringr::str_length(id))
   
   g = ggplot(jj, aes(x = long, y = lat, group = group)) +
     geom_polygon(color = 'lightgray', size = 0.1, fill = 'lightgrey') +
-    geom_polygon(data = filter(jj, !is.na(value)), aes(fill = value)) +
-    geom_path(color = 'gray50', size = 0.25) +
+    geom_polygon(data = filter(jj, !is.na(value)), aes(fill = value), color = 'lightgrey', size = 0.1) +
+    geom_path(data = filter(jj, level == 2), color = 'gray50', size = 0.1) +
     coord_quickmap(ylim = c(35, 65), xlim = c(-15, 25)) +
     xlab('Longitude') + ylab('Latitude') 
-  
-  
   
   return(g)
 }
