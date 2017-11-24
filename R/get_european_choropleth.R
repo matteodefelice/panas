@@ -18,9 +18,9 @@ get_european_choropleth <- function(input_data) {
   #### Homogenise the column names
   colnames(input_data) = c('area','value')
   ## Remove unneeded regions (to speed up the plot)
-  if (max(stringr::str_length(df$area)) == 2) {
+  if (max(stringr::str_length(input_data$area)) == 2) {
     eumap_0_2 = filter(eumap_0_2, stringr::str_length(id) == 2)
-  } else if (max(stringr::str_length(df$area)) == 3) {
+  } else if (max(stringr::str_length(input_data$area)) == 3) {
     eumap_0_2 = filter(eumap_0_2, stringr::str_length(id) <= 3)
   }
   ## Match EUMAP ADM0 names
