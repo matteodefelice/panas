@@ -31,7 +31,7 @@ get_european_choropleth <- function(input_data) {
   
   g = ggplot(jj, aes(x = long, y = lat, group = group)) +
     geom_polygon(color = 'lightgray', size = 0.1, fill = 'lightgrey') +
-    geom_polygon(data = filter(jj, !is.na(value)), aes(fill = value), alpha = 0.5) +
+    geom_polygon(data = filter(jj, !is.na(value)), aes(fill = value)) +
     geom_path(color = 'gray50', size = 0.25) +
     coord_quickmap(ylim = c(35, 65), xlim = c(-15, 25)) +
     xlab('Longitude') + ylab('Latitude') 
