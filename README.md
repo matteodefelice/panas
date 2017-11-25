@@ -11,7 +11,7 @@ devtools::install_github("matteodefelice/panas")
 ```
 
 Load the `panas` package:
-``` r
+```r
 library(panas)
 ```
 
@@ -19,7 +19,7 @@ library(panas)
 This package gives you the possibility to visualise gridded data with the function `plot_field_discrete` and choropleths using NUTS classification (this means only Europe). 
 
 ### Gridded data
-```
+```r
 > data(ncep)
 > g = plot_field_discrete(z, lon, lat, latlim = c(-30, 70), breaks = c(5e-5, 1e-4), color_scale = 'PuBu', varname = 'prec.', grid_step = 60)
 > print(g + coord_equal())
@@ -27,7 +27,7 @@ This package gives you the possibility to visualise gridded data with the functi
 ![alt text](https://github.com/matteodefelice/panas/blob/master/figures/example_plot1.png "Logo Title Text 1")
 
 ### Choropleths
-```
+```r
 > my_data = tibble(area = c('IT', 'ITC', 'UKG', 'ITC1'), value = c('a','b','b', 'c'))
 > g = get_european_choropleth(my_data)
 > print(g + coord_map('lambert', 35, 58, ylim = c(35, 68), xlim = c(-15, 25)))
