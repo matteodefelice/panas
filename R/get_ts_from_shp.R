@@ -52,11 +52,11 @@ get_ts_from_shp <- function(obj, aggregate_function = 'mean', shapefile = 'NUTS0
   # Check if obj is a well-formed list and extract the information about data and coordinates
   if (!is.list(obj)) {
     stop("Obj must be a list. ")
-  } else if (prod(c('lat', 'lon', 'data') %in% names(d)) == 1) {
+  } else if (prod(c('lat', 'lon', 'data') %in% names(obj)) == 1) {
     pts = expand.grid(lat = lat, lon = lon)
     pts_index = expand.grid(lat = seq(1, length(lat)), lon = seq(1, length(lon)))
     obj = obj$data
-  } else if (prod(c('Data', 'xyCoords') %in% names(d)) == 1) {
+  } else if (prod(c('Data', 'xyCoords') %in% names(obs)) == 1) {
     pts = expand.grid(lat = obj$xyCoords$y, lon = obj$xyCoords$x)
     pts_index = expand.grid(lat = seq(1, length(obj$xyCoords$y)), lon = seq(1, length(obj$xyCoords$x)))
     lat = obj$xyCoords$y
