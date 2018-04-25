@@ -64,9 +64,9 @@ plot_field_discrete <- function(x, lon, lat, lonlim = 'auto', latlim = 'auto', b
   }
   ## Load world border shapefile: high-res for 'small' files
   if ((diff(lonlim) * diff(latlim)) < 3200) {
-    load(system.file("borders", "TM_WORLD_BORDERS-0.3.shp.Rdata", package = "eneaR"))
+    load(system.file("borders", "TM_WORLD_BORDERS-0.3.shp.Rdata", package = "panas"))
   } else {
-    load(system.file("borders", "TM_WORLD_BORDERS_SIMPL-0.3.shp.Rdata", package = "eneaR"))
+    load(system.file("borders", "TM_WORLD_BORDERS_SIMPL-0.3.shp.Rdata", package = "panas"))
   }
   ####################### SMOOTHING PART #########################
   if (smooth && is.vector(x)) {
