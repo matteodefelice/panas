@@ -1,7 +1,7 @@
 Package: panas
 Type: Package
 Title: Reduce the phriction when working with maps & time-series
-Version: 0.2.2
+Version: 0.2.3
 Author: Matteo De Felice
 Maintainer: Matteo De Felice <matteo.defelice@enea.it>
 Description: More about what it does (maybe more than one line)

@@ -5,6 +5,7 @@
 #' Europe.
 
 #' @param obj A gridded object: a grid structure from Climate4R functions or a \code{list} with \code{lat}, \code{lon} and \code{data} fields. See Details section for further details.
+#' @param weight_matrix A matrix to be used as weight when aggregating 
 #' @param aggregate_function The function to be used to aggregate the grid points. Options are: \code{mean} and \code{sum}
 #' @param shapefile The shapefile to be used to aggregate the grid points. The options are: \code{NUTS0}, \code{NUTS1}, \code{NUTS2}, \code{eh2050} and \code{custom}
 #' @param shapefile_id_field Field name of the shapefile to be used as identifier
@@ -22,7 +23,7 @@
 #' - \code{NUTS1}: NUTS_REG_01M_2013_ADM1 (specify source)
 #' - \code{NUTS2}: NUTS_REG_01M_2013_REGIONS (specify source)
 #' - \code{eh2050}: cluster as defined in the FP7 e-Highway2050 project
-get_ts_from_shp <- function(obj, aggregate_function = 'mean', shapefile = 'NUTS0', shapefile_id_field = 'NUTS_ID', path_to_shapefile = NULL, cos_weighted = TRUE) {
+get_ts_from_shp <- function(obj, weight_matrix = NULL, aggregate_function = 'mean', shapefile = 'NUTS0', shapefile_id_field = 'NUTS_ID', path_to_shapefile = NULL, cos_weighted = TRUE) {
 
   if (shapefile == 'NUTS2') {
     eumap = readOGR(system.file("NUTS", package = "panas"), "NUTS_REG_01M_2013_REGIONS")
@@ -85,6 +86,7 @@ get_ts_from_shp <- function(obj, aggregate_function = 'mean', shapefile = 'NUTS0
     sel_pts = pts_index[pts_index$region == REG, c(1, 2)]
     lsel = vector("list", nrow(sel_pts))
     weight_lat = 0
+    cum_weight_mat = 0 # accumulator for weight matrix
     for (i in 1:nrow(sel_pts)) {
       if (length(dim(obj)) == 2) {
         ## 2D array
@@ -100,6 +102,10 @@ get_ts_from_shp <- function(obj, aggregate_function = 'mean', shapefile = 'NUTS0
         # Weight by cos(lat)
         lsel[[i]] = lsel[[i]] * cos(sel_pts$lat[i] * pi / 180)
         weight_lat =  weight_lat + cos(sel_pts$lat[i] * pi / 180)
+      }
+      if (!is.null(weight_matrix)) {
+        lsel[[i]] = lsel[[i]] * weight_matrix[sel_pts$lat[i], sel_pts$lon[i]]
+        cum_weight_mat = cum_weight_mat + weight_matrix[sel_pts$lat[i], sel_pts$lon[i]]
       }
     }
     lsel = do.call("cbind", lsel)
@@ -123,6 +129,10 @@ get_ts_from_shp <- function(obj, aggregate_function = 'mean', shapefile = 'NUTS0
       # cos_weighted part
       if (cos_weighted && aggregate_function == 'mean') {
         d = d * nrow(sel_pts) / weight_lat
+      }
+      # weight matrix
+      if (!is.null(weight_matrix)) {
+        d = d * nrow(sel_pts) / cum_weight_mat
       }
     }
     data[[REG]] = d

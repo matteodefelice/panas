@@ -4,12 +4,14 @@
 \alias{get_ts_from_shp}
 \title{Aggregate a gridded object into national or regional boundaries.}
 \usage{
-get_ts_from_shp(obj, aggregate_function = "mean", shapefile = "NUTS0",
-  shapefile_id_field = "NUTS_ID", path_to_shapefile = NULL,
-  cos_weighted = TRUE)
+get_ts_from_shp(obj, weight_matrix = NULL, aggregate_function = "mean",
+  shapefile = "NUTS0", shapefile_id_field = "NUTS_ID",
+  path_to_shapefile = NULL, cos_weighted = TRUE)
 }
 \arguments{
 \item{obj}{A gridded object: a grid structure from Climate4R functions or a \code{list} with \code{lat}, \code{lon} and \code{data} fields. See Details section for further details.}
+
+\item{weight_matrix}{A matrix to be used as weight when aggregating}
 
 \item{aggregate_function}{The function to be used to aggregate the grid points. Options are: \code{mean} and \code{sum}}
 
