@@ -8,7 +8,6 @@
 #' @param weight_matrix A matrix to be used as weight when aggregating 
 #' @param aggregate_function The function to be used to aggregate the grid points. Options are: \code{mean} and \code{sum}
 #' @param shapefile The shapefile to be used to aggregate the grid points. The options are: \code{NUTS0}, \code{NUTS1}, \code{NUTS2}, \code{eh2050} and \code{custom}
-#' @param shapefile_id_field Field name of the shapefile to be used as identifier
 #' @param path_to_shapefile The path of the \code{.shp} file to be used when \code{shapefile} is set to \code{custom}
 #' @param cos_weighted Define is the grid points will be weighted according the cosine of the latitude
 #' @return A list containing all the fields names ad \code{shapefile_id_field}, each field contains aggregated the time-series
@@ -23,19 +22,29 @@
 #' - \code{NUTS1}: NUTS_REG_01M_2013_ADM1 (specify source)
 #' - \code{NUTS2}: NUTS_REG_01M_2013_REGIONS (specify source)
 #' - \code{eh2050}: cluster as defined in the FP7 e-Highway2050 project
-get_ts_from_shp <- function(obj, weight_matrix = NULL, aggregate_function = 'mean', shapefile = 'NUTS0', shapefile_id_field = 'NUTS_ID', path_to_shapefile = NULL, cos_weighted = TRUE) {
+#' - \code{hybas05}: HydroBASINS Level 5
+#' - \code{hybas06}: HydroBASINS Level 6
+get_ts_from_shp <- function(obj, weight_matrix = NULL, aggregate_function = 'mean', shapefile = 'NUTS0', path_to_shapefile = NULL, cos_weighted = TRUE) {
 
   if (shapefile == 'NUTS2') {
     eumap = readOGR(system.file("NUTS", package = "panas"), "NUTS_REG_01M_2013_REGIONS")
+    shapefile_id_field = 'NUTS_ID'
   } else if (shapefile == 'NUTS1') {
     eumap = readOGR(system.file("NUTS", package = "panas"), "NUTS_REG_01M_2013_ADM1")
+    shapefile_id_field = 'NUTS_ID'
   } else if (shapefile == 'NUTS0'){
     eumap = readOGR(system.file("NUTS", package = "panas"), "countries_EU")
     names(eumap)[1] = "NUTS_ID"
+    shapefile_id_field = 'NUTS_ID'
   } else if (shapefile == 'eh2050') {
     eumap = readOGR(system.file("NUTS", package = "panas"), "borders-wgs84")
-  } else if (shapefile == 'custom'){
-    stop('TBD')
+    shapefile_id_field = 'NUTS_ID'
+  } else if (shapefile == 'hybas05') {
+    eumap = readOGR(system.file("hybas_eu_lev05_v1c", package = "panas"), "hybas_eu_lev05_v1c")
+    shapefile_id_field = 'HYBAS_ID'
+  } else if (shapefile == 'hybas06') {
+    eumap = readOGR(system.file("hybas_eu_lev06_v1c", package = "panas"), "hybas_eu_lev06_v1c")
+    shapefile_id_field = 'HYBAS_ID'
   } else {
     stop('Shape option not existent')
   }
@@ -75,7 +84,7 @@ get_ts_from_shp <- function(obj, weight_matrix = NULL, aggregate_function = 'mea
   over_target = over(pts, as(eumap, "SpatialPolygons"))
   pts$region = eumap[[shapefile_id_field]][over_target]
 
-  pts_index$region = droplevels(eumap$NUTS_ID[over_target])
+  pts_index$region = droplevels(eumap[[shapefile_id_field]][over_target])
   pts_index = pts_index[!is.na(over_target), ]
 
   # For each region compute the aggregation
