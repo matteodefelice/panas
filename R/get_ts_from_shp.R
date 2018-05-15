@@ -24,6 +24,7 @@
 #' - \code{eh2050}: cluster as defined in the FP7 e-Highway2050 project
 #' - \code{hybas05}: HydroBASINS Level 5
 #' - \code{hybas06}: HydroBASINS Level 6
+#' - \code{WAPP}: WAPP catchments from JRC D.2
 get_ts_from_shp <- function(obj, weight_matrix = NULL, aggregate_function = 'mean', shapefile = 'NUTS0', path_to_shapefile = NULL, cos_weighted = TRUE) {
 
   if (shapefile == 'NUTS2') {
@@ -45,6 +46,9 @@ get_ts_from_shp <- function(obj, weight_matrix = NULL, aggregate_function = 'mea
   } else if (shapefile == 'hybas06') {
     eumap = readOGR(system.file("hybas_eu_lev06_v1c", package = "panas"), "hybas_eu_lev06_v1c")
     shapefile_id_field = 'HYBAS_ID'
+  } else if (shapefile == 'WAPP') {
+    eumap = readOGR(system.file("wapp", package = "panas"), "Catchments")
+    shapefile_id_field = 'name'
   } else {
     stop('Shape option not existent')
   }
