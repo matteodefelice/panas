@@ -7,47 +7,44 @@
 #' @param obj A gridded object: a grid structure from Climate4R functions or a \code{list} with \code{lat}, \code{lon} and \code{data} fields. See Details section for further details.
 #' @param weight_matrix A matrix to be used as weight when aggregating 
 #' @param aggregate_function The function to be used to aggregate the grid points. Options are: \code{mean} and \code{sum}
-#' @param shapefile The shapefile to be used to aggregate the grid points. The options are: \code{NUTS0}, \code{NUTS1}, \code{NUTS2}, \code{eh2050} and \code{custom}
-#' @param path_to_shapefile The path of the \code{.shp} file to be used when \code{shapefile} is set to \code{custom}
+#' @param shapefile The shapefile to be used to aggregate the grid points. 
 #' @param cos_weighted Define is the grid points will be weighted according the cosine of the latitude
 #' @return A list containing all the fields names ad \code{shapefile_id_field}, each field contains aggregated the time-series
 #' @author Matteo De Felice
 #' @export
 #' @details Details
 #' The \code{obj} can be: 1. a list with three mandatory fields: \code{lat} with the latitude values, \code{lon} with the longitude and \code{data} with the gridded field consistent with the coordinates;
-#' 2. a grid structure as in the \code{Climate4R} bundle (citation neeeded), for example from \code{loadeR} package.
+#' 2. a grid structure as in the \code{Climate4R} bundle (http://www.meteo.unican.es/climate4R), for example from \code{loadeR} package.
 #'
 #' The shapefiles available are the following:
-#' - \code{NUTS0}: countries_EU (specify source)
-#' - \code{NUTS1}: NUTS_REG_01M_2013_ADM1 (specify source)
-#' - \code{NUTS2}: NUTS_REG_01M_2013_REGIONS (specify source)
+#' - \code{NUTS0-2}: Data from EUROSTAT NUTS (small islands removed) https://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nutscountries_EU 
 #' - \code{eh2050}: cluster as defined in the FP7 e-Highway2050 project
-#' - \code{hybas05}: HydroBASINS Level 5
-#' - \code{hybas06}: HydroBASINS Level 6
-#' - \code{WAPP}: WAPP catchments from JRC D.2
+#' - \code{hybas05}: HydroBASINS Level 5 (http://www.hydrosheds.org/page/hydrobasins)
+#' - \code{hybas06}: HydroBASINS Level 6 (http://www.hydrosheds.org/page/hydrobasins)
+#' - \code{WAPP}: WAPP catchments from the JRC LISFLOOD hydrological model
+
 get_ts_from_shp <- function(obj, weight_matrix = NULL, aggregate_function = 'mean', shapefile = 'NUTS0', path_to_shapefile = NULL, cos_weighted = TRUE) {
 
   if (shapefile == 'NUTS2') {
-    eumap = readOGR(system.file("NUTS", package = "panas"), "NUTS_REG_01M_2013_REGIONS")
+    eumap = read_rds(system.file("NUTS_RG_01M_2016_4326_LEVL_2.reduced.rds", package = "panas"))
     shapefile_id_field = 'NUTS_ID'
   } else if (shapefile == 'NUTS1') {
-    eumap = readOGR(system.file("NUTS", package = "panas"), "NUTS_REG_01M_2013_ADM1")
+    eumap = read_rds(system.file("NUTS_RG_01M_2016_4326_LEVL_1.reduced.rds", package = "panas"))
     shapefile_id_field = 'NUTS_ID'
   } else if (shapefile == 'NUTS0'){
-    eumap = readOGR(system.file("NUTS", package = "panas"), "countries_EU")
-    names(eumap)[1] = "NUTS_ID"
+    eumap = read_rds(system.file("NUTS_RG_01M_2016_4326_LEVL_0.reduced.rds", package = "panas"))
     shapefile_id_field = 'NUTS_ID'
   } else if (shapefile == 'eh2050') {
-    eumap = readOGR(system.file("NUTS", package = "panas"), "borders-wgs84")
+    eumap = read_rds(system.file("eh2050_clusters.rds", package = "panas"))
     shapefile_id_field = 'NUTS_ID'
   } else if (shapefile == 'hybas05') {
-    eumap = readOGR(system.file("hybas_eu_lev05_v1c", package = "panas"), "hybas_eu_lev05_v1c")
+    eumap = read_rds(system.file("hybas_lev05.rds", package = "panas"))
     shapefile_id_field = 'HYBAS_ID'
   } else if (shapefile == 'hybas06') {
-    eumap = readOGR(system.file("hybas_eu_lev06_v1c", package = "panas"), "hybas_eu_lev06_v1c")
+    eumap = read_rds(system.file("hybas_lev06.rds", package = "panas"))
     shapefile_id_field = 'HYBAS_ID'
   } else if (shapefile == 'WAPP') {
-    eumap = readOGR(system.file("wapp", package = "panas"), "Catchments")
+    eumap = read_rds(system.file("wapp_catchments.rds", package = "panas"))
     shapefile_id_field = 'name'
   } else {
     stop('Shape option not existent')
@@ -80,7 +77,7 @@ get_ts_from_shp <- function(obj, weight_matrix = NULL, aggregate_function = 'mea
     stop('Obj is not a well-formed list. See documentation for more details. ')
   }
 
-  # Convert pts to a Spatial object
+  # Convert pts to a Spatial object
   coordinates(pts) = c("lon", "lat")
   # CHECK if all shapefiles have proj4string
   proj4string(pts) = proj4string(eumap)
