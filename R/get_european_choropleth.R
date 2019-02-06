@@ -1,4 +1,4 @@
-#' Prepare a ggplot2-based choropleth on European national (NUTS0) countries.
+#' Prepare a ggplot2-based choropleth on European national (NUTS0) countries.
 #' @param input_data A data frame containing the data to be mapped. It should contain two columns: the first containing the NUTS code of the region,
 #' the second the value that should be mapped.
 #' @return A ggplot2 object
@@ -8,7 +8,7 @@
 #'
 get_european_choropleth <- function(input_data) {
   #### Load shapefiles
-  load(system.file("NUTS", "eumap_merged_0_2.rda", package = "panas"))
+  load(system.file("eumap_merged_0_2.rda", package = "panas"))
   #### Check the input data frame
   if (!is.data.frame(input_data)) {
     stop('The input_data is not a data frame')
