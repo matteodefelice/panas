@@ -8,7 +8,7 @@
 #'
 get_european_choropleth <- function(input_data) {
   #### Load shapefiles
-  load(system.file("eumap_merged_0_2.rda", package = "panas"))
+  eumap_0_2 = read_rds(system.file("eumap_merged_0_2_2016.rds", package = "panas"))
   #### Check the input data frame
   if (!is.data.frame(input_data)) {
     stop('The input_data is not a data frame')
