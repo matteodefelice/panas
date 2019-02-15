@@ -31,6 +31,7 @@ get_european_choropleth <- function(input_data) {
     mutate(level = stringr::str_length(id))
   
   g = ggplot(jj, aes(x = long, y = lat, group = group)) +
+    borders(database = 'world', regions = '.', fill = 'lightgrey', size = 0.1) +
     geom_polygon(color = 'lightgray', size = 0.1, fill = 'lightgrey') +
     geom_polygon(data = filter(jj, !is.na(value)), aes(fill = value), color = 'lightgrey', size = 0.1) +
     geom_path(data = filter(jj, level == 2), color = 'gray50', size = 0.1) +
