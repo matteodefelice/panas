@@ -127,7 +127,7 @@ plot_field_discrete <- function(x, lon, lat, lonlim = 'auto', latlim = 'auto', b
   
   dd$x = cut(dd$x, breaks = c(-Inf, breaks, Inf), labels = labels)
   
-  ### SUBSETTING DATA
+  ### SUBSETTING DATA
   if (length(lonlim) > 0) {
     dd = subset(dd, lon >= lonlim[1] & lon <= lonlim[2])
     wmap = subset(wmap, long >= lonlim[1] & long <= lonlim[2])
