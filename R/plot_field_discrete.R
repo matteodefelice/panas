@@ -174,7 +174,7 @@ plot_field_discrete <- function(x, lon, lat, lonlim = 'auto', latlim = 'auto', b
                          shape = 16)  #this line is due to ggplot2.0.0
     }
   } else {
-    g = ggplot() + geom_tile(data = filter(dd, sig == 1), aes(x = lon, y = lat, fill = x, color = x), alpha = 0.8)
+    g = ggplot() + geom_tile(data = dplyr::filter(dd, sig == 1), aes(x = lon, y = lat, fill = x, color = x), alpha = 0.8)
   }
   
   g = g + geom_path(data = wmap, aes(x = long, y = lat, group = group), size = line_width)

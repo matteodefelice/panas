@@ -19,9 +19,9 @@ get_european_choropleth <- function(input_data) {
   colnames(input_data) = c('area','value')
   ## Remove unneeded regions (to speed up the plot)
   if (max(stringr::str_length(input_data$area)) == 2) {
-    eumap_0_2 = filter(eumap_0_2, stringr::str_length(id) == 2)
+    eumap_0_2 = dplyr::filter(eumap_0_2, stringr::str_length(id) == 2)
   } else if (max(stringr::str_length(input_data$area)) == 3) {
-    eumap_0_2 = filter(eumap_0_2, stringr::str_length(id) <= 3)
+    eumap_0_2 = dplyr::filter(eumap_0_2, stringr::str_length(id) <= 3)
   }
   ## Match EUMAP ADM0 names
   input_data = mutate(input_data, area = if_else(area == 'GR', 'EL', area)) %>%
@@ -33,8 +33,8 @@ get_european_choropleth <- function(input_data) {
   g = ggplot(jj, aes(x = long, y = lat, group = group)) +
     borders(database = 'world', regions = '.', fill = 'lightgrey', size = 0.1) +
     geom_polygon(color = 'lightgray', size = 0.1, fill = 'lightgrey') +
-    geom_polygon(data = filter(jj, !is.na(value)), aes(fill = value), color = 'lightgrey', size = 0.1) +
-    geom_path(data = filter(jj, level == 2), color = 'gray50', size = 0.1) +
+    geom_polygon(data = dplyr::filter(jj, !is.na(value)), aes(fill = value), color = 'lightgrey', size = 0.1) +
+    geom_path(data = dplyr::filter(jj, level == 2), color = 'gray50', size = 0.1) +
     coord_quickmap(ylim = c(35, 65), xlim = c(-15, 25)) +
     xlab('Longitude') + ylab('Latitude') 
   
