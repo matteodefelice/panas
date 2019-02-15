@@ -110,8 +110,8 @@ get_ts_from_shp <- function(obj, weight_matrix = NULL, aggregate_function = 'mea
       }
       if (cos_weighted) {
         # Weight by cos(lat)
-        lsel[[i]] = lsel[[i]] * cos(sel_pts$lat[i] * pi / 180)
-        weight_lat =  weight_lat + cos(sel_pts$lat[i] * pi / 180)
+        lsel[[i]] = lsel[[i]] * cos(lat[sel_pts$lat[i]] * pi / 180)
+        weight_lat =  weight_lat + cos(lat[sel_pts$lat[i]] * pi / 180)
       }
       if (!is.null(weight_matrix)) {
         lsel[[i]] = lsel[[i]] * weight_matrix[sel_pts$lat[i], sel_pts$lon[i]]
