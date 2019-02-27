@@ -1,19 +1,20 @@
 Package: panas
 Type: Package
-Title: Reduce the phriction when working with maps & time-series
-Version: 0.3
+Title: Reduce the friction when working with maps & time-series
+Version: 0.4
 Author: Matteo De Felice
 Maintainer: Matteo De Felice <matteo.defelice@enea.it>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+License: CC-BY-4.0
 Encoding: UTF-8
 LazyData: true
 Depends: sp,
   readr,
+  stringr,
   fields,
   reshape2, 
   ggplot2, 
   RColorBrewer, 
   dplyr
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1

@@ -5,8 +5,7 @@
 \title{Aggregate a gridded object into national or regional boundaries.}
 \usage{
 get_ts_from_shp(obj, weight_matrix = NULL, aggregate_function = "mean",
-  shapefile = "NUTS0", shapefile_id_field = "NUTS_ID",
-  path_to_shapefile = NULL, cos_weighted = TRUE)
+  shapefile = "NUTS0", path_to_shapefile = NULL, cos_weighted = TRUE)
 }
 \arguments{
 \item{obj}{A gridded object: a grid structure from Climate4R functions or a \code{list} with \code{lat}, \code{lon} and \code{data} fields. See Details section for further details.}
@@ -15,32 +14,31 @@ get_ts_from_shp(obj, weight_matrix = NULL, aggregate_function = "mean",
 
 \item{aggregate_function}{The function to be used to aggregate the grid points. Options are: \code{mean} and \code{sum}}
 
-\item{shapefile}{The shapefile to be used to aggregate the grid points. The options are: \code{NUTS0}, \code{NUTS1}, \code{NUTS2}, \code{eh2050} and \code{custom}}
+\item{shapefile}{The shapefile to be used to aggregate the grid points.}
 
-\item{shapefile_id_field}{Field name of the shapefile to be used as identifier}
-
-\item{path_to_shapefile}{The path of the \code{.shp} file to be used when \code{shapefile} is set to \code{custom}}
-
-\item{cos_weighted}{Define is the grid points will be weighted according the cosine of the latitude}
+\item{cos_weighted}{Define if the grid points will be weighted according the cosine of the latitude}
 }
 \value{
 A list containing all the fields names ad \code{shapefile_id_field}, each field contains aggregated the time-series
 }
 \description{
-The function spatially aggregate using a function (for example, \code{mean}) all the grid points
-within the borders defined by a shapefile. The function already provides some shapefiles for
+The function spatially aggregates using a function (for example, \code{mean}) all the grid points
+within the borders defined by a shapefile. The function provides some shapefiles for
 Europe.
 }
 \details{
 Details
 The \code{obj} can be: 1. a list with three mandatory fields: \code{lat} with the latitude values, \code{lon} with the longitude and \code{data} with the gridded field consistent with the coordinates;
-2. a grid structure as in the \code{Climate4R} bundle (citation neeeded), for example from \code{loadeR} package.
+2. a grid structure as in the \code{Climate4R} bundle (http://www.meteo.unican.es/climate4R), for example from \code{loadeR} package.
 
 The shapefiles available are the following:
-- \code{NUTS0}: countries_EU (specify source)
-- \code{NUTS1}: NUTS_REG_01M_2013_ADM1 (specify source)
-- \code{NUTS2}: NUTS_REG_01M_2013_REGIONS (specify source)
-- \code{eh2050}: cluster as defined in the FP7 e-Highway2050 project
+\itemize{
+\item \code{NUTS0-2}: Data from EUROSTAT NUTS (small islands removed) https://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nutscountries_EU 
+\item \code{eh2050}: cluster as defined in the FP7 e-Highway2050 project
+\item \code{hybas05}: HydroBASINS Level 5 (http://www.hydrosheds.org/page/hydrobasins)
+\item \code{hybas06}: HydroBASINS Level 6 (http://www.hydrosheds.org/page/hydrobasins)
+\item \code{WAPP}: WAPP catchments from the JRC LISFLOOD hydrological model
+}
 }
 \author{
 Matteo De Felice

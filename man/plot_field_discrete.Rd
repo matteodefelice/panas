@@ -9,7 +9,8 @@ plot_field_discrete(x, lon, lat, lonlim = "auto", latlim = "auto",
   rev_color_scale = F, show_lat_lon_labels = T, varname = "x",
   mask = NULL, siglev = NULL, plot_only_sig = F, smooth = F,
   smooth_factor = 5, smooth_theta = 0.5, line_width = 0.5,
-  dot_size = 0.5, grid_step = 10, font_size = 18, show_legend = TRUE)
+  dot_size = 0.5, grid_step = 10, font_size = 18,
+  show_legend = TRUE)
 }
 \arguments{
 \item{x}{The field to be plotted, it can be both a matrix or a vector. See Details for more information.}

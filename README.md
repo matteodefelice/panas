@@ -15,6 +15,17 @@ Load the `panas` package:
 library(panas)
 ```
 
+# Dealing with NUTS boundaries
+
+The function `get_region_from_coordinates` returns the NUTS region where a set of points lie. 
+
+```r
+> x = data.frame(lat = c(48.5, 49), lon = c(12, 4))
+> get_region_from_coordinates(x, shapefile = 'NUTS1')
+[1] DE2 FRF
+121 Levels: AL0 AT1 AT2 AT3 BE1 BE2 BE3 BG3 BG4 CH0 CY0 ... UKN
+```
+
 # Visualisation
 This package gives you the possibility to visualise gridded data with the function `plot_field_discrete` and choropleths using NUTS classification (this means only Europe). 
 
