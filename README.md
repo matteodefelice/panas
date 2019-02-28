@@ -1,6 +1,6 @@
 panas
 ======
-The goal of this package is to reduce the phriction when working with maps &amp; time-series.
+The goal of this package is to reduce the friction when working with maps &amp; time-series.
 
 It provides two main functionalities: the visualisation of gridded data & choropleths, and the aggregation from gridded data to time-series using geographical borders. 
 
