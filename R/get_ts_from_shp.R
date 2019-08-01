@@ -66,8 +66,8 @@ get_ts_from_shp <- function(obj, weight_matrix = NULL, aggregate_function = 'mea
   if (!is.list(obj)) {
     stop("Obj must be a list. ")
   } else if (prod(c('lat', 'lon', 'data') %in% names(obj)) == 1) {
-    pts = expand.grid(lat = lat, lon = lon)
-    pts_index = expand.grid(lat = seq(1, length(lat)), lon = seq(1, length(lon)))
+    pts = expand.grid(lat =obj$lat, lon = obj$lon)
+    pts_index = expand.grid(lat = seq(1, length(obj$lat)), lon = seq(1, length(obj$lon)))
     obj = obj$data
   } else if (prod(c('Data', 'xyCoords') %in% names(obj)) == 1) {
     pts = expand.grid(lat = obj$xyCoords$y, lon = obj$xyCoords$x)
