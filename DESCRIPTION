@@ -1,7 +1,7 @@
 Package: panas
 Type: Package
 Title: Reduce the friction when working with maps & time-series
-Version: 0.4
+Version: 0.5
 Author: Matteo De Felice
 Maintainer: Matteo De Felice <matteo.defelice@enea.it>
 Description: More about what it does (maybe more than one line)
