@@ -5,16 +5,14 @@
 #' Europe.
 
 #' @param obj A gridded object: a grid structure from Climate4R functions or a \code{list} with \code{lat}, \code{lon} and \code{data} fields. See Details section for further details.
-#' @param weight_matrix A matrix to be used as weight when aggregating 
 #' @param aggregate_function The function to be used to aggregate the grid points. Options are: \code{mean} and \code{sum}
 #' @param shapefile The shapefile to be used to aggregate the grid points. 
 #' @param cos_weighted Define if the grid points will be weighted according the cosine of the latitude
 #' @return A list containing all the fields names ad \code{shapefile_id_field}, each field contains aggregated the time-series
 #' @author Matteo De Felice
-#' @export
+#' @keywords internal
 #' @details Details
-#' The \code{obj} can be: 1. a list with three mandatory fields: \code{lat} with the latitude values, \code{lon} with the longitude and \code{data} with the gridded field consistent with the coordinates;
-#' 2. a grid structure as in the \code{Climate4R} bundle (http://www.meteo.unican.es/climate4R), for example from \code{loadeR} package.
+#' The \code{obj} must be a list with three mandatory fields: \code{lat} with the latitude values, \code{lon} with the longitude and \code{data} with the gridded field consistent with the coordinates;
 #'
 #' The shapefiles available are the following:
 #' \itemize{
@@ -25,8 +23,8 @@
 #' \item \code{WAPP}: WAPP catchments from the JRC LISFLOOD hydrological model
 #' }
 
-get_ts_from_shp <- function(obj, weight_matrix = NULL, aggregate_function = 'mean', shapefile = 'NUTS0', path_to_shapefile = NULL, cos_weighted = TRUE) {
-
+get_ts_from_shp.data.frame <- function(obj, aggregate_function = 'mean', shapefile = 'NUTS0', path_to_shapefile = NULL, cos_weighted = TRUE) {
+  
   if (shapefile == 'NUTS2') {
     eumap = read_rds(system.file("NUTS_RG_01M_2016_4326_LEVL_2.reduced.rds", package = "panas"))
     shapefile_id_field = 'NUTS_ID'
@@ -51,7 +49,7 @@ get_ts_from_shp <- function(obj, weight_matrix = NULL, aggregate_function = 'mea
   } else {
     stop('Shape option not existent')
   }
-
+  
   # Select type of arithmetic function
   if (aggregate_function == 'mean') {
     base_fun = mean
@@ -63,64 +61,43 @@ get_ts_from_shp <- function(obj, weight_matrix = NULL, aggregate_function = 'mea
     stop('Aggregate function not recognised')
   }
   # Check if obj is a well-formed list and extract the information about data and coordinates
-  if (!is.list(obj)) {
-    stop("Obj must be a list/data.frame ")
+  if (!is.data.frame(obj)) {
+    stop("Obj must be a data frame. ")
   } else if (prod(c('lat', 'lon', 'data') %in% names(obj)) == 1) {
-    
-    return(
-      get_ts_from_shp.data.frame(obj, aggregate_function, shapefile, path_to_shapefile, cos_weighted) 
-    )
-    
-    
-  } else if (prod(c('Data', 'xyCoords') %in% names(obj)) == 1) {
-    pts = expand.grid(lat = obj$xyCoords$y, lon = obj$xyCoords$x)
-    pts_index = expand.grid(lat = seq(1, length(obj$xyCoords$y)), lon = seq(1, length(obj$xyCoords$x)))
-    lat = obj$xyCoords$y
-    lon = obj$xyCoords$x
-    obj = obj$Data
+    pts = obj[,c('lat', 'lon')] #expand.grid(lat = obj$lat, lon = obj$lon)
   } else {
-    stop('Obj is not a well-formed list/data.frame. See documentation for more details. ')
+    stop('Obj is not a well-formed data frame. Have you checked the column names? See documentation for more details. ')
   }
-
+  
   # Convert pts to a Spatial object
   coordinates(pts) = c("lon", "lat")
   # CHECK if all shapefiles have proj4string
   proj4string(pts) = proj4string(eumap)
   # Calculate the spatial overlay of pts points over the shapefile
   over_target = over(pts, as(eumap, "SpatialPolygons"))
-  pts$region = eumap[[shapefile_id_field]][over_target]
-
-  pts_index$region = droplevels(eumap[[shapefile_id_field]][over_target])
-  pts_index = pts_index[!is.na(over_target), ]
-
+  
+  obj$region = eumap[[shapefile_id_field]][over_target]
+  
   # For each region compute the aggregation
-  SEL_REGIONS = levels(pts_index$region)
+  SEL_REGIONS = unique(obj$region)
+  SEL_REGIONS = SEL_REGIONS[!is.na(SEL_REGIONS)]
+  
   data = list()
   for (REG in SEL_REGIONS) {
     # Select all the points in REG
-    sel_pts = pts_index[pts_index$region == REG, c(1, 2)]
+    sel_pts = obj %>% 
+      dplyr::filter(region == REG)
     lsel = vector("list", nrow(sel_pts))
     weight_lat = 0
     cum_weight_mat = 0 # accumulator for weight matrix
     for (i in 1:nrow(sel_pts)) {
-      if (length(dim(obj)) == 2) {
-        ## 2D array
-        lsel[[i]] = obj[sel_pts$lat[i], sel_pts$lon[i]]
-      } else if (length(dim(obj)) == 3) {
-        ## 3D array
-        lsel[[i]] = obj[, sel_pts$lat[i], sel_pts$lon[i]]
-      } else {
-        ## 4D array
-        lsel[[i]] = t(obj[, , sel_pts$lat[i], sel_pts$lon[i]])
-      }
+      
+      lsel[[i]] = sel_pts$data[i]
+      
       if (cos_weighted) {
         # Weight by cos(lat)
-        lsel[[i]] = lsel[[i]] * cos(lat[sel_pts$lat[i]] * pi / 180)
-        weight_lat =  weight_lat + cos(lat[sel_pts$lat[i]] * pi / 180)
-      }
-      if (!is.null(weight_matrix)) {
-        lsel[[i]] = lsel[[i]] * weight_matrix[sel_pts$lat[i], sel_pts$lon[i]]
-        cum_weight_mat = cum_weight_mat + weight_matrix[sel_pts$lat[i], sel_pts$lon[i]]
+        lsel[[i]] = lsel[[i]] * cos(sel_pts$lat[i] * pi / 180)
+        weight_lat =  weight_lat + cos(sel_pts$lat[i] * pi / 180)
       }
     }
     lsel = do.call("cbind", lsel)
@@ -130,26 +107,13 @@ get_ts_from_shp <- function(obj, weight_matrix = NULL, aggregate_function = 'mea
       # cbind of selected points
       d = lsel
     } else {
-      if (length(dim(obj)) == 2) {
-        d = base_fun(lsel, na.rm = T)
-      } else if (length(dim(obj)) == 3) {
-        d = array_fun(lsel, na.rm = T)
-      } else {
-        nmem = dim(obj)[1]
-        d = matrix(NA, nrow = nrow(lsel), ncol = nmem)
-        for (k in 1:nmem) {
-          d[, k] = array_fun(matrix(lsel[, seq(k, ncol(lsel), nmem)], nrow = nrow(lsel)), na.rm = T)
-        }
-      }
-      # cos_weighted part
-      if (cos_weighted && aggregate_function == 'mean') {
-        d = d * nrow(sel_pts) / weight_lat
-      }
-      # weight matrix
-      if (!is.null(weight_matrix)) {
-        d = d * nrow(sel_pts) / cum_weight_mat
-      }
+      d = base_fun(lsel, na.rm = T)
     }
+    # cos_weighted part
+    if (cos_weighted && aggregate_function == 'mean') {
+      d = d * nrow(sel_pts) / weight_lat
+    }
+    
     data[[REG]] = d
   }
   return(data)
