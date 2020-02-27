@@ -12,7 +12,7 @@
 #' @author Matteo De Felice
 #' @keywords internal
 #' @details Details
-#' The \code{obj} must be a list with three mandatory fields: \code{lat} with the latitude values, \code{lon} with the longitude and \code{data} with the gridded field consistent with the coordinates;
+#' The \code{obj} must be a list with three mandatory fields: \code{lat} with the latitude values, \code{lon} with the longitude and \code{data} with the gridded field consistent with the coordinates. Column \code{time} is optional.;
 #'
 #' The shapefiles available are the following:
 #' \itemize{

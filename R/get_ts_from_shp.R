@@ -13,7 +13,7 @@
 #' @author Matteo De Felice
 #' @export
 #' @details Details
-#' The \code{obj} can be: 1. a list with three mandatory fields: \code{lat} with the latitude values, \code{lon} with the longitude and \code{data} with the gridded field consistent with the coordinates;
+#' The \code{obj} can be: 1. a list with three mandatory fields: \code{lat} with the latitude values, \code{lon} with the longitude and \code{data} with the gridded field consistent with the coordinates. Column \code{time} is optional;
 #' 2. a grid structure as in the \code{Climate4R} bundle (http://www.meteo.unican.es/climate4R), for example from \code{loadeR} package.
 #'
 #' The shapefiles available are the following:
