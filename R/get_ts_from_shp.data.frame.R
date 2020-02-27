@@ -65,6 +65,9 @@ get_ts_from_shp.data.frame <- function(obj, aggregate_function = 'mean', shapefi
     stop("Obj must be a data frame. ")
   } else if (prod(c('lat', 'lon', 'data') %in% names(obj)) == 1) {
     pts = obj[,c('lat', 'lon')] #expand.grid(lat = obj$lat, lon = obj$lon)
+    if (!('time' %in% names(obj))) {
+      obj$time = 1
+    }
   } else {
     stop('Obj is not a well-formed data frame. Have you checked the column names? See documentation for more details. ')
   }
@@ -90,28 +93,38 @@ get_ts_from_shp.data.frame <- function(obj, aggregate_function = 'mean', shapefi
     lsel = vector("list", nrow(sel_pts))
     weight_lat = 0
     cum_weight_mat = 0 # accumulator for weight matrix
+    
     for (i in 1:nrow(sel_pts)) {
       
-      lsel[[i]] = sel_pts$data[i]
+      sel_pts$data_out[i] = sel_pts$data[i]
       
-      if (cos_weighted) {
+      if (cos_weighted && aggregate_function == 'mean') {
         # Weight by cos(lat)
-        lsel[[i]] = lsel[[i]] * cos(sel_pts$lat[i] * pi / 180)
-        weight_lat =  weight_lat + cos(sel_pts$lat[i] * pi / 180)
+        sel_pts$data_out[i] = sel_pts$data_out[i] * cos(sel_pts$lat[i] * pi / 180)
+        sel_pts$weight_lat[i] = cos(sel_pts$lat[i] * pi / 180)
+      } else {
+        sel_pts$weight_lat[i]  = 1
       }
     }
-    lsel = do.call("cbind", lsel)
+    # lsel = do.call("cbind", lsel)
+    
     if ((aggregate_function != 'sum') && (aggregate_function != 'mean')) {
       # In case of != sum or mean
       # we assume the output is "just" the raw
       # cbind of selected points
-      d = lsel
+      d = sel_pts %>%
+        select(lat, lon, time, data)
     } else {
-      d = base_fun(lsel, na.rm = T)
-    }
-    # cos_weighted part
-    if (cos_weighted && aggregate_function == 'mean') {
-      d = d * nrow(sel_pts) / weight_lat
+      
+      d_out = sel_pts %>%
+        group_by(time) %>%
+        summarise(
+          data = base_fun(data * weight_lat, na.rm = TRUE) / mean(weight_lat)
+        ) %>%
+        arrange(
+          time
+        ) 
+      d = d_out$data
     }
     
     data[[REG]] = d
